@@ -1,6 +1,8 @@
 #include "MyVector.h"
 #include <iostream>
 
+//operetors hehe
+
 using namespace physics;
 
 float MyVector::Magnitude() const

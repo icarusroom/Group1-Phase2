@@ -1,0 +1,12 @@
+﻿  MyCamera.cpp
+  OrthoCamera.cpp
+  PerspectiveCamera.cpp
+  ContactResolver.cpp
+  Chain.cpp
+  MyVector.cpp
+  RenderLine.cpp
+  main.cpp
+C:\Users\User\Desktop\Quack!\Code Quack!\Game Jam 2\Group1-Phase2\main.cpp(52,45): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Quack!\Code Quack!\Game Jam 2\Group1-Phase2\main.cpp(52,31): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
+  GDPHYS_Assignment#1.vcxproj -> C:\Users\User\Desktop\Quack!\Code Quack!\Game Jam 2\Group1-Phase2\x64\Debug\GDPHYS_Assignment#1.exe

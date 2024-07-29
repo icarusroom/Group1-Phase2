@@ -1,5 +1,15 @@
-
+#ifndef OPENGLOJB_DEF
+#define OPENGLOJB_DEF
 #include "GameObject.h"
+
+#endif OPENGLOJB_DEF
+
+#ifndef VECTOR_DEF
+#define VECTOR_DEF
+//#include "P6/MyVector.h"
+
+#endif VECTOR_DEF
+
 #include <vector>
 
 class RenderLine
@@ -20,4 +30,7 @@ public:
 	void Update(physics::MyVector p1, physics::MyVector p2, glm::mat4 projectionMatrix, glm::mat4 viewMatrix);
 
 	void Draw();
+
+	glm::vec4 normalizeByMaxComponent(const glm::vec4& vec);
 };
+

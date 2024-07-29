@@ -15,9 +15,8 @@
 #include "P6/Force/Chain.h"
 #include "RenderLine.h"
 
-
 using namespace std::chrono_literals;
-constexpr std::chrono::nanoseconds timestep(16ms);
+constexpr std::chrono::nanoseconds timestep(16ms); // Define a constant time step for simulation
 
 enum class CameraMode {
     Orthographic,
@@ -26,7 +25,7 @@ enum class CameraMode {
 
 int main(void)
 {
-    /* User Input */
+    // User inputs value
     float cableLength, particleGap, particleRad, gravStrength, forceX, forceY, forceZ;
     std::cout << "Cable Length: "; std::cin >> cableLength;
     std::cout << "Particle Gap: "; std::cin >> particleGap;
@@ -45,10 +44,11 @@ int main(void)
     auto curr_time = clock::now();
     auto prev_time = curr_time;
     std::chrono::nanoseconds curr_ns(0);
-  
-    if (!glfwInit())
+
+    if (!glfwInit()) // Initialize the GLFW library
         return -1;
 
+    // Create a windowed mode window and its OpenGL context
     window = glfwCreateWindow(window_width, window_height, "GDPHYSX Phase 2 Grp 1", NULL, NULL);
     if (!window)
     {
@@ -57,35 +57,35 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
-    gladLoadGL();
+    gladLoadGL(); // Load OpenGL functions
 
-    //OrthoCamera
+    // Initialize OrthoCamera and set its position
     auto ortho_camera = new OrthoCamera();
     ortho_camera->setCameraPosition(glm::vec3(0.0f, 0.0f, 400.0f));
 
-    //PerspectiveCamera
+    // Initialize PerspectiveCamera and set its position
     auto pers_camera = new PerspectiveCamera();
     pers_camera->setCameraPosition(glm::vec3(0, 0.f, 550.f));
 
-    //Initiliaze PhysicsWorld
+    // Initialize PhysicsWorld with gravity strength
     auto pWorld = physics::PhysicsWorld(MyVector(0, gravStrength, 0));
 
-    //sphere
+    // Load sphere model
     auto sphere = GameObject("3D/sphere.obj", "Shaders/sample.vert", "Shaders/sample.frag");
 
-    glViewport(0, 0, 800, 800);
+    glViewport(0, 0, 800, 800); // Set the viewport
 
-    //Initialize RenderParticles
+    // Initialize RenderParticles list
     std::list<RenderParticle*> RenderParticles;
 
-    //Spawning Variables
+    // Spawning Variables
     float fThreshHold = 0.2f;
     float fTicks = 0.0f;
 
-    //Default CameraMode
+    // Default CameraMode
     CameraMode currentCameraMode = CameraMode::Orthographic;
 
-    //Matrices
+    // Matrices
     glm::mat4 identity_matrix = glm::mat4(1.0f);
     glm::mat4 projection_matrix = glm::mat4(1.f);
     glm::mat4 view_matrix = glm::mat4(1.0f);
@@ -94,7 +94,7 @@ int main(void)
     bool paused = false;
     bool pressed = false;
 
-    //Instantiating PhysicParticle
+    // Instantiate PhysicsParticles and add them to the PhysicsWorld
     physics::PhysicsParticle p3 = physics::PhysicsParticle();
     p3.Position = physics::MyVector(0, 100, 0);
     p3.mass = 50;
@@ -125,6 +125,7 @@ int main(void)
     p5.radius = particleRad;
     pWorld.AddParticle(&p5);
 
+    // Create Chain springs and add them to the force registry
     physics::MyVector springPos3 = physics::MyVector(0, 150, 0);
     physics::Chain chainSpring3 = Chain(springPos3, 0, cableLength);
     pWorld.forceRegistry.Add(&p3, &chainSpring3);
@@ -145,7 +146,7 @@ int main(void)
     physics::Chain chainSpring5 = Chain(springPos5, 0, cableLength);
     pWorld.forceRegistry.Add(&p5, &chainSpring5);
 
-
+    // Create RenderParticles and add them to the list
     RenderParticle rp1 = RenderParticle(&p1, &sphere, glm::vec4(0.4f, 0, 0, 0.f), p1.radius);
     RenderParticles.push_back(&rp1);
 
@@ -161,16 +162,17 @@ int main(void)
     RenderParticle rp5 = RenderParticle(&p5, &sphere, glm::vec4(0.4f, 0, 0, 0.f), p5.radius);
     RenderParticles.push_back(&rp5);
 
-    //Renderlines
+    // Create RenderLines to visualize the springs
     RenderLine line1 = RenderLine(springPos1, p1.Position, glm::vec4(1, 1, 1, 1));
     RenderLine line2 = RenderLine(springPos2, p2.Position, glm::vec4(1, 1, 1, 1));
     RenderLine line3 = RenderLine(springPos3, p3.Position, glm::vec4(1, 1, 1, 1));
     RenderLine line4 = RenderLine(springPos4, p4.Position, glm::vec4(1, 1, 1, 1));
     RenderLine line5 = RenderLine(springPos5, p5.Position, glm::vec4(1, 1, 1, 1));
 
+    // Main loop
     while (!glfwWindowShouldClose(window))
     {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT); // Clear the color buffer
 
         curr_time = clock::now();
         auto dur = std::chrono::duration_cast<std::chrono::nanoseconds> (curr_time - prev_time);
@@ -178,12 +180,12 @@ int main(void)
 
         curr_ns += dur;
 
-        
+        // Simulation update loop
         if (curr_ns >= timestep) {
             auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(curr_ns);
             curr_ns -= curr_ns;
 
-            //Key inputs
+            // Key inputs for camera mode switching and applying force
             if (glfwGetKey(window, GLFW_KEY_1))
             {
                 currentCameraMode = CameraMode::Orthographic;
@@ -214,16 +216,18 @@ int main(void)
                 view_matrix = pers_camera->GetViewMatrix();
             }
 
-            if(!paused){
-                pWorld.Update((float)ms.count() / 1000);
+            if (!paused) {
+                pWorld.Update((float)ms.count() / 1000); // Update the PhysicsWorld
 
             }
         }
 
+        // Render particles
         for (std::list<RenderParticle*>::iterator i = RenderParticles.begin(); i != RenderParticles.end(); i++) {
             (*i)->Draw(identity_matrix, projection_matrix, view_matrix);
         }
 
+        // Render lines
         line1.Update(springPos1, p1.Position, projection_matrix, view_matrix);
         line1.Draw();
 
@@ -239,10 +243,10 @@ int main(void)
         line5.Update(springPos5, p5.Position, projection_matrix, view_matrix);
         line5.Draw();
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        glfwSwapBuffers(window); // Swap front and back buffers
+        glfwPollEvents(); // Poll for and process events
     }
 
-    glfwTerminate();
+    glfwTerminate(); // Terminate GLFW
     return 0;
 }

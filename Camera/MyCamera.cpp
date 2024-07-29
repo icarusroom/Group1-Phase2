@@ -1,40 +1,44 @@
 #include "MyCamera.h"
 #include <iostream>
+
+// Constructor to initialize the camera's position, orientation, and up vector
 MyCamera::MyCamera()
 {
-	this->cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
-	this->orientation = glm::vec3(0.0f, 0.0f, -1.0f);
-	this->up = glm::normalize(glm::vec3(0.f, 1.f, 0.f));
+    this->cameraPos = glm::vec3(0.0f, 0.0f, 0.0f); // Initial position
+    this->orientation = glm::vec3(0.0f, 0.0f, -1.0f); // Initial orientation (looking down the negative Z-axis)
+    this->up = glm::normalize(glm::vec3(0.f, 1.f, 0.f)); // Up vector (normalized)
 
-	SetViewMatrix();
+    SetViewMatrix(); // Set the initial view matrix
 }
 
+// Function to move the camera by a specified vector
 void MyCamera::CameraMovement(glm::vec3 movement)
 {
-	this->cameraPos += movement;
-	SetViewMatrix();
+    this->cameraPos += movement; // Update camera position
+    SetViewMatrix(); // Update the view matrix
 }
 
+// Function to set the camera's position
 void MyCamera::setCameraPosition(glm::vec3 position)
 {
-	glm::vec3 new_pos = position;
-	this->cameraPos = new_pos;
-	SetViewMatrix();
+    this->cameraPos = position; // Update the camera position
+    SetViewMatrix(); // Update the view matrix
 }
 
+// Function to set the camera's orientation
 void MyCamera::setCenter(glm::vec3 orientation)
 {
-	glm::vec3 new_orientation = orientation;
-	this->orientation = new_orientation;
-	SetViewMatrix();
+    this->orientation = orientation; // Update the camera orientation
+    SetViewMatrix(); // Update the view matrix
 }
 
+// Function to update the camera's position and orientation based on user input
 void MyCamera::Update(GLFWwindow* window, float time)
 {
-    float cameraSpeed = 2.5f * time;
+    float cameraSpeed = 2.5f * time; // Calculate the camera speed
     glm::vec3 lookAtPoint(0.0f, 0.0f, 0.0f); // Point of interest (0, 0, 0)
 
-    //Calculate rotation around the point of interest(lookAtPoint)
+    // Rotate the camera around the point of interest (lookAtPoint)
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
         // Rotate left around the lookAtPoint
@@ -50,7 +54,7 @@ void MyCamera::Update(GLFWwindow* window, float time)
         cameraPos = lookAtPoint + glm::vec3(rotation * glm::vec4(toCamera, 1.0f));
     }
 
-    // Move forward/backward relative to the orientation around lookAtPoint
+    // Move the camera forward or backward relative to its orientation around the lookAtPoint
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         glm::vec3 direction = glm::normalize(lookAtPoint - cameraPos);
@@ -70,8 +74,8 @@ void MyCamera::Update(GLFWwindow* window, float time)
     SetViewMatrix();
 }
 
-
+// Function to set the view matrix based on the camera's position and orientation
 void MyCamera::SetViewMatrix()
 {
-	this->view_matrix = glm::lookAt(this->cameraPos, this->orientation, up);
+    this->view_matrix = glm::lookAt(this->cameraPos, this->orientation, up);
 }
